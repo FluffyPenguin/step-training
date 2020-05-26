@@ -1,18 +1,96 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>My Portfolio</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="script.js"></script>
-  </head>
-  <body>
-    <div id="content">
-      <h1>My Portfolio</h1>
-      <p>This is my portfolio.</p>
-      <p>Click here to get a random message:</p>
-      <button onclick="addRandomGreeting()">Hello</button>
-      <div id="greeting-container"></div>
-    </div>
-  </body>
+
+<head>
+  <title> Bloggin Penguin </title>
+  <link rel="stylesheet" href="style.css"/>
+  <!--{% include "templates/head.html" %}-->
+  <!-- html content to be put in the head of every html file -->
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png"/>
+
+
+</head>
+
+<body>
+  <!--{% include "templates/topnav.html" %}-->
+
+<link rel="stylesheet" href="topnav.css"/>
+<div id="topnav" class = "topnav" w3-include-html="topnav.html" >
+  <a id="logoBox" href= "index.html#home">
+    <img
+      id ="logo"
+      src= "https://cdn6.f-cdn.com/contestentries/363431/6597075/56d7ded7655e2_thumb900.jpg"
+      alt = "Logo"
+
+    />
+  </a>
+  <!-- <a id="index.html" href="index.html#home">Home</a>
+  <a id="RPS.html" href="RPS.html">RPS</a>
+  <a id="pong.html" href="pong.html">Pong</a>
+  <a id="newPost.html" href="newPost.html">Post!</a>
+  <a id="viewPosts.html" href="viewPosts.html">Post Page</a> -->
+</div id="topnav">
+
+  <img id="easterEggPikachu"
+    src="https://i.kym-cdn.com/entries/icons/original/000/027/475/Screen_Shot_2018-10-25_at_11.02.15_AM.png"
+    alt="Easter Egg Surprised Pikachu"
+  />
+  <img id="easterEggPenguin"
+    src="http://nheilke.com/blog/wp-content/uploads/2011/12/IMG_9120.jpg"
+    alt="Easter Egg Penguin"
+  />
+
+  <div id="home" class="main">
+    <h1 id="mainTitle"> The Bloggin Penguin</h1>
+    <div class="divider"></div>
+    <section id="topButtonContainers" class="rowFlexBox">
+      <button id="likeButton"> Like!</button>
+      <button id="subscribeButton"> Subscribe! </button>
+    </section>
+    <div class="red","blue"></div>
+
+    <h2> About Me! </h2>
+    <img
+      id="selfPicture"
+      src = "https://csg.tinkercad.com/things/clpPapKGRYT/t725.png?rev=145&s=185d80ee465ede90c761deda3b05c503&v=0"
+      alt = "Picture of myself (a penguin)"
+
+    />
+    <p>
+      I am a penguin! I like eating fish and stuff and like memes.
+    </p>
+    <h2> Some Stuff I Like </h2>
+    <ul >
+      <li> Fish </li>
+      <li> Ice </li>
+      <li> Soccer </li>
+      <li> Memes </li>
+      <li> Google </li>
+    </ul>
+
+    <h2> My Favorite Meme </h2>
+
+    <img
+      id = pikachuMeme
+      src = "https://pics.me.me/when-you-see-a-surprised-pikachu-meme-in-4k-woww-37497086.png"
+      alt = "pikachu meme"
+    />
+
+    <a href="https://youtube.com"> The site that wastes all my time </a>
+    <form action="https://google.com">
+      <button type="submit">My Favorite Website!</button>
+    </form>
+    
+    <iframe
+      id=youtubeFrame
+      src="https://www.youtube.com/embed/tgbNymZ7vqY">
+    </iframe>
+
+</div id ="main">
+
+
+
+<script src="script.js"> </script>
+<!-- link at the bottom to reduce load time -->
+</body>
 </html>
