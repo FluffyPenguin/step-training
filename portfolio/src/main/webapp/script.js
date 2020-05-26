@@ -34,8 +34,8 @@ const penguin = ["KeyP", "KeyE", "KeyN", "KeyG", "KeyU", "KeyI", "KeyN"];
 const penguinCheck = [];
 
 //activate correct header button
-const topNavBtn = document.getElementById("index.html");
-topNavBtn.className = "active";
+// const topNavBtn = document.getElementById("index.html");
+// topNavBtn.className = "active";
 
 const alertButton = document.querySelector("#alertButton");
 alertButton.addEventListener("click", (event) => {
@@ -113,9 +113,9 @@ const checkKonami = (e) => {
     easterEggPikachu.style.display = "block"; //make it visible
 
     //frogger!
-    setTimeout(() => {
-      window.location.href = "frogger.html";
-    }, 500);
+    // setTimeout(() => {
+    //   window.location.href = "frogger.html";
+    // }, 500);
   }
   //console.log(konamiCheck);
 }; //end check Konami/
