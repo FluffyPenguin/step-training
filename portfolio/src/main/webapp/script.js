@@ -37,11 +37,6 @@ const penguinCheck = [];
 // const topNavBtn = document.getElementById("index.html");
 // topNavBtn.className = "active";
 
-const alertButton = document.querySelector("#alertButton");
-alertButton.addEventListener("click", (event) => {
-  alert("Get Alerted by the Event Listener!");
-});
-
 const pikachuMeme = document.querySelector("#pikachuMeme");
 pikachuMeme.addEventListener("click", (event) => {
   alert("Don't click my pikachu");
