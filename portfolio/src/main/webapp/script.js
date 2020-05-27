@@ -38,9 +38,14 @@ const penguinCheck = [];
 // topNavBtn.className = "active";
 
 const pikachuMeme = document.querySelector("#pikachuMeme");
+pikachuMeme.style.opacity = "1";
 pikachuMeme.addEventListener("click", (event) => {
-  alert("Don't click my pikachu");
-  pikachuMeme.style.transform = "scale(2x)";
+  if (parseFloat(pikachuMeme.style.opacity) > 0) {
+    alert("Don't click my pikachu");
+    pikachuMeme.style.opacity = parseFloat(pikachuMeme.style.opacity) - 0.2;
+  } else{
+    alert("Look what you've done now");
+  }
 });
 
 //like button event listeners
