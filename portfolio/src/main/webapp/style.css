@@ -16,11 +16,13 @@
 }
 
 #selfPicture {
-  /* native is 725x453 */
-  border-radius: 20px;
-  width: 271.875px;
-  height: 169.875px;
+  /* native is 3264 x 1836 */
+  border-radius: 3px;
+  width: 200px;
+  height: 200px;
   margin: 0 20px 5px 0;
+  object-fit: cover;
+  object-position: 25%;
 
 }
 #youtubeFrame{
