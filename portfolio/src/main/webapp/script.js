@@ -142,5 +142,11 @@ window.addEventListener("keydown", (e) => {
 
 });
 
+//Fetch
+const getResponse = async () => {
+  const response = await fetch('/data');
+  const text = await response.text();
+  document.getElementById('responseDiv').innerText = text;
+}
 
 
