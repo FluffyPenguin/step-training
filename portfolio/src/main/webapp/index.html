@@ -11,7 +11,7 @@
 
 </head>
 
-<body>
+<body onload="getComments()">
   <!--{% include "templates/topnav.html" %}-->
 
   <link rel="stylesheet" href="topnav.css"/>
@@ -107,8 +107,16 @@
       src = "https://pics.me.me/when-you-see-a-surprised-pikachu-meme-in-4k-woww-37497086.png"
       alt = "pikachu meme"
     />
+    <br/>
 
-    <button onclick="getResponse()" id="helloTxt"> Get Comments </button>
+    <!-- <button onclick="getResponse()" id="helloTxt"> Get Comments </button> -->
+    <form id="commentForm" action="/data-comments" method="POST">
+      <label for="commentText"> Post a comment! </label>
+      <br/>
+      <textarea required id="commentText" name="commentText"></textarea>
+      <input type="submit" />
+    </form>
+
     <div id="commentDiv"> </div>
   
 </div id ="home">

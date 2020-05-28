@@ -143,8 +143,8 @@ window.addEventListener("keydown", (e) => {
 });
 
 //Fetch
-const getResponse = async () => {
-  const response = await fetch('/data');
+const getComments = async () => {
+  const response = await fetch('/data-comments');
   const comments = await response.json();
   const commentDiv = document.getElementById('commentDiv');
   comments.forEach(comment => commentDiv.innerText += comment + "\n");
