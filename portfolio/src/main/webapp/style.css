@@ -1,6 +1,11 @@
 
-
-
+.logo{
+  height: 20px;
+  width: 20px
+}
+.whiteText {
+  color: white;
+}
 #likeButton, #subscribeButton{
   transition: 800ms all;
   border-radius: 600px;
@@ -9,17 +14,34 @@
   background-color: white;
 
 }
+
 #selfPicture {
-  /* native is 725x453 */
-  border-radius: 20px;
-  width: 543.75px;
-  height: 339.75px;
-  margin: 20px;
+  /* native is 3264 x 1836 */
+  border-radius: 3px;
+  width: 200px;
+  height: 200px;
+  margin: 0 30px 5px 0;
+  object-fit: cover;
+  object-position: 25%;
 
 }
 #youtubeFrame{
   width: 608;
   height: 308
+}
+#links{
+  width:25%;
+}
+#aboutme{
+  width: 40vw;
+}
+
+#logoBox{
+  padding: 0;
+  height: 48px;
+}
+#inLogo{
+  width: 22px;
 }
 
 #easterEggPikachu{
@@ -27,4 +49,11 @@
 }
 #easterEggPenguin{
   display: none;
+}
+
+#footer{
+  width: 100vw;
+  height: 100px;
+  background-color: #333;
+
 }
