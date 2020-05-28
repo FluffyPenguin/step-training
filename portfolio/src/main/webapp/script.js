@@ -40,9 +40,11 @@ const penguinCheck = [];
 const pikachuMeme = document.querySelector("#pikachuMeme");
 pikachuMeme.style.opacity = "1";
 pikachuMeme.addEventListener("click", (event) => {
-  if (parseFloat(pikachuMeme.style.opacity) > 0) {
+  if (parseFloat(pikachuMeme.style.opacity) == 1) {
     alert("Don't click my pikachu");
-    pikachuMeme.style.opacity = parseFloat(pikachuMeme.style.opacity) - 0.2;
+  }
+  if (parseFloat(pikachuMeme.style.opacity) > 0) {
+    pikachuMeme.style.opacity = parseFloat(pikachuMeme.style.opacity) - 0.1;
   } else{
     alert("Look what you've done now");
   }
