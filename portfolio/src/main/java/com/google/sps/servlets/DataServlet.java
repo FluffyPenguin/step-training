@@ -42,7 +42,7 @@ public class DataServlet extends HttpServlet {
   }
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String comment = getParameter(request, "commentText", "error");
+    String comment = getParameter(request, "commentText");
     comments.add(comment);
     response.sendRedirect("/");
   }
@@ -51,10 +51,10 @@ public class DataServlet extends HttpServlet {
    * @return the request parameter, or the default value if the parameter
    *         was not specified by the client
    */
-  private String getParameter(HttpServletRequest request, String name, String defaultValue) {
+  private String getParameter(HttpServletRequest request, String name) {
     String value = request.getParameter(name);
     if (value == null) {
-      return defaultValue;
+      throw IllegalArgumentException;
     }
     return value;
   }
