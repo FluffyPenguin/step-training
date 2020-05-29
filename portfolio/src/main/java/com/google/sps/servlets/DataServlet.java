@@ -42,19 +42,22 @@ public class DataServlet extends HttpServlet {
   }
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String comment = getParameter(request, "commentText", "error");
+    String comment = getParameter(request, "commentText");
     comments.add(comment);
     response.sendRedirect("/");
   }
 
   /**
+   * @param request the HttpServletRequest made by the client
+   * @param name the name of the parameter to get from the request
    * @return the request parameter, or the default value if the parameter
    *         was not specified by the client
+   * @throws IllegalArgumentException if the specified parameter name is not found
    */
-  private String getParameter(HttpServletRequest request, String name, String defaultValue) {
+  private String getParameter(HttpServletRequest request, String name) {
     String value = request.getParameter(name);
     if (value == null) {
-      return defaultValue;
+      throw new IllegalArgumentException("Specified parameter not found.");
     }
     return value;
   }
