@@ -18,6 +18,9 @@ import com.google.gson.Gson;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
 
 import java.io.IOException;
 import java.util.List;
@@ -38,6 +41,11 @@ public class DataServlet extends HttpServlet {
     datastore = DatastoreServiceFactory.getDatastoreService();
     gson = new Gson();
     comments = new ArrayList<>();
+    Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
+    PreparedQuery results = datastore.prepare(query);
+    for (Entity comment : results.asIterable()) {
+      comments.add((String) comment.getProperty("text"));
+    }
   }
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -49,7 +57,10 @@ public class DataServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String comment = getParameter(request, "commentText");
     comments.add(comment);
+
+    long timestamp = System.currentTimeMillis();
     Entity commentEntity = new Entity("Comment");
+    commentEntity.setProperty("timestamp",timestamp);
     commentEntity.setProperty("text", comment);
     datastore.put(commentEntity);
     response.sendRedirect("/");
