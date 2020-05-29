@@ -144,9 +144,13 @@ window.addEventListener("keydown", (e) => {
 
 //Fetch
 const getComments = async () => {
-  const response = await fetch('/data-comments');
+  
+  const numComments = document.querySelector("#numComments").value;
+  const response = await fetch('/data-comments?numComments=' + numComments);
+  
   const comments = await response.json();
   const commentDiv = document.getElementById('commentDiv');
+  commentDiv.innerText = "";
   comments.forEach(comment => commentDiv.innerText += comment + "\n");
 }
 

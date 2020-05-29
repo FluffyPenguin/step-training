@@ -40,16 +40,21 @@ public class DataServlet extends HttpServlet {
   public void init(){
     datastore = DatastoreServiceFactory.getDatastoreService();
     gson = new Gson();
-    comments = new ArrayList<>();
-    Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
-    PreparedQuery results = datastore.prepare(query);
-    for (Entity comment : results.asIterable()) {
-      comments.add((String) comment.getProperty("text"));
-    }
+    
+    
   }
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    //Should I be reloading the comments array from datastore here?
+    int numComments = getNumParameter(request, "numComments");
+    comments = new ArrayList<>(numComments);
+    Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
+    PreparedQuery results = datastore.prepare(query);
+    for (Entity comment : results.asIterable()) {
+      if (comments.size() == numComments) {
+        break;
+      }
+      comments.add((String) comment.getProperty("text"));
+    }
     String jsonComments = gson.toJson(comments);
     response.setContentType("application/json;");
     response.getWriter().println(jsonComments);
@@ -57,8 +62,6 @@ public class DataServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String comment = getParameter(request, "commentText");
-    comments.add(comment);
-
     long timestamp = System.currentTimeMillis();
     Entity commentEntity = new Entity("Comment");
     commentEntity.setProperty("timestamp",timestamp);
@@ -80,5 +83,19 @@ public class DataServlet extends HttpServlet {
       throw new IllegalArgumentException("Specified parameter not found.");
     }
     return value;
+  }
+  /**
+   * @param request the HttpServletRequest made by the client
+   * @param name the name of the parameter to get from the request
+   * @return the request parameter, or the default value if the parameter
+   *         was not specified by the client
+   * @throws NumberFormatException if the parameter is not a number
+   */
+  private int getNumParameter(HttpServletRequest request, String name) {
+    String value = request.getParameter(name);
+    if (value == null) {
+      throw new IllegalArgumentException("Specified parameter not found.");
+    }
+    return Integer.parseInt(value);
   }
 }
