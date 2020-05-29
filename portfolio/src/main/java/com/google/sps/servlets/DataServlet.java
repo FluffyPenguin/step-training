@@ -15,6 +15,9 @@
 package com.google.sps.servlets;
 
 import com.google.gson.Gson;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
 
 import java.io.IOException;
 import java.util.List;
@@ -29,8 +32,10 @@ import javax.servlet.http.HttpServletResponse;
 public class DataServlet extends HttpServlet {
   private List<String> comments;
   private Gson gson;
+  private DatastoreService datastore;
   @Override
   public void init(){
+    datastore = DatastoreServiceFactory.getDatastoreService();
     gson = new Gson();
     comments = new ArrayList<>();
   }
@@ -44,6 +49,9 @@ public class DataServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String comment = getParameter(request, "commentText");
     comments.add(comment);
+    Entity commentEntity = new Entity("Comment");
+    commentEntity.setProperty("text", comment);
+    datastore.put(commentEntity);
     response.sendRedirect("/");
   }
 
