@@ -14,19 +14,51 @@
 
 package com.google.sps.servlets;
 
+import com.google.gson.Gson;
+
 import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
-@WebServlet("/data")
+@WebServlet("/data-comments")
 public class DataServlet extends HttpServlet {
-
+  private List<String> comments;
+  private Gson gson;
+  @Override
+  public void init(){
+    gson = new Gson();
+    comments = new ArrayList<>();
+  }
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    response.setContentType("text/html;");
-    response.getWriter().println("<h1>Hello world!</h1>");
+    String jsonComments = gson.toJson(comments);
+    response.setContentType("application/json;");
+    response.getWriter().println(jsonComments);
+  }
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    String comment = getParameter(request, "commentText");
+    comments.add(comment);
+    response.sendRedirect("/");
+  }
+
+  /**
+   * @param request the HttpServletRequest made by the client
+   * @param name the name of the parameter to get from the request
+   * @return the request parameter, or the default value if the parameter
+   *         was not specified by the client
+   * @throws IllegalArgumentException if the specified parameter name is not found
+   */
+  private String getParameter(HttpServletRequest request, String name) {
+    String value = request.getParameter(name);
+    if (value == null) {
+      throw new IllegalArgumentException("Specified parameter not found.");
+    }
+    return value;
   }
 }
