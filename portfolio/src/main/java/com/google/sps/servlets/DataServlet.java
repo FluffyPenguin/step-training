@@ -44,7 +44,7 @@ public class DataServlet extends HttpServlet {
     Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
     PreparedQuery results = datastore.prepare(query);
     for (Entity comment : results.asIterable()) {
-      comments.add( comment.getProperty("text"));
+      comments.add((String) comment.getProperty("text"));
     }
   }
   @Override
