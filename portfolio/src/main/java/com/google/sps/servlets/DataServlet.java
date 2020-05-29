@@ -44,11 +44,12 @@ public class DataServlet extends HttpServlet {
     Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
     PreparedQuery results = datastore.prepare(query);
     for (Entity comment : results.asIterable()) {
-      comments.add((String) comment.getProperty("text"));
+      comments.add( comment.getProperty("text"));
     }
   }
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    //Should I be reloading the comments array from datastore here?
     String jsonComments = gson.toJson(comments);
     response.setContentType("application/json;");
     response.getWriter().println(jsonComments);
