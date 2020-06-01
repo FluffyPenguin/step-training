@@ -104,13 +104,24 @@ window.addEventListener("keydown", (e) => {
 //Fetch
 const getComments = async () => {
   
-  const numComments = document.querySelector("#numComments").value;
-  const response = await fetch('/data-comments?numComments=' + numComments);
+  const numComments = document.querySelector("#maxNumComments").value;
+  const response = await fetch('/data-comments?maxNumComments=' + numComments);
   
   const comments = await response.json();
   const commentDiv = document.getElementById('commentDiv');
   commentDiv.innerText = "";
   comments.forEach(comment => commentDiv.innerText += comment + "\n");
+}
+
+const commentText = document.querySelector("#commentText");
+const postComment = async() => {
+  let comment = commentText.value;
+  commentText.value = "";
+  await fetch("/data-comments", {
+      method: "POST",
+      body: new URLSearchParams({"commentText" : comment})
+    });
+  commentDiv.innerText = comment + "\n" + commentDiv.innerText;
 }
 
 
