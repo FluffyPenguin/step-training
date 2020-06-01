@@ -45,12 +45,12 @@ public class DataServlet extends HttpServlet {
   }
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    int numComments = getNumParameter(request, "numComments");
-    comments = new ArrayList<>(numComments);
+    int maxNumComments = getNumParameter(request, "maxNumComments");
+    comments = new ArrayList<>(maxNumComments);
     Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
     PreparedQuery results = datastore.prepare(query);
     for (Entity comment : results.asIterable()) {
-      if (comments.size() == numComments) {
+      if (comments.size() == maxNumComments) {
         break;
       }
       comments.add((String) comment.getProperty("text"));
