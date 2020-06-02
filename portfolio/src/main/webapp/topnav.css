@@ -96,3 +96,8 @@ hr {
    width: 67.9px;
    height: 48px;
 }
+
+#logoBox{
+  padding: 0;
+  height: 48px;
+}

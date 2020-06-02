@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 
 /** Servlet that handles requests to the blog page */
-@WebServlet("/blog*")
+@WebServlet("/blog")
 public class BlogServlet extends HttpServlet {
   private List<String> comments;
   private Gson gson;
