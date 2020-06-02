@@ -15,6 +15,12 @@
 package com.google.sps.servlets;
 
 import com.google.gson.Gson;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
 
 import java.io.IOException;
 import java.util.List;
@@ -29,21 +35,36 @@ import javax.servlet.http.HttpServletResponse;
 public class DataServlet extends HttpServlet {
   private List<String> comments;
   private Gson gson;
+  private DatastoreService datastore;
   @Override
   public void init(){
+    datastore = DatastoreServiceFactory.getDatastoreService();
     gson = new Gson();
-    comments = new ArrayList<>();
+    
+    
   }
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    int maxNumComments = getNumParameter(request, "maxNumComments");
+    comments = new ArrayList<>(maxNumComments);
+    Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
+    PreparedQuery results = datastore.prepare(query);
+    for (Entity comment : results.asIterable()) {
+      if (comments.size() == maxNumComments) {
+        break;
+      }
+      comments.add((String) comment.getProperty("text"));
+    }
     String jsonComments = gson.toJson(comments);
     response.setContentType("application/json;");
     response.getWriter().println(jsonComments);
   }
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String comment = getParameter(request, "commentText");
-    comments.add(comment);
+    Entity commentEntity = new Entity("Comment");
+    commentEntity.setProperty("timestamp",System.currentTimeMillis());
+    commentEntity.setProperty("text", getParameter(request, "commentText"));
+    datastore.put(commentEntity);
     response.sendRedirect("/");
   }
 
@@ -60,5 +81,19 @@ public class DataServlet extends HttpServlet {
       throw new IllegalArgumentException("Specified parameter not found.");
     }
     return value;
+  }
+  /**
+   * @param request the HttpServletRequest made by the client
+   * @param name the name of the parameter to get from the request
+   * @return the request parameter, or the default value if the parameter
+   *         was not specified by the client
+   * @throws NumberFormatException if the parameter is not a number
+   */
+  private int getNumParameter(HttpServletRequest request, String name) {
+    String value = request.getParameter(name);
+    if (value == null) {
+      throw new IllegalArgumentException("Specified parameter not found.");
+    }
+    return Integer.parseInt(value);
   }
 }

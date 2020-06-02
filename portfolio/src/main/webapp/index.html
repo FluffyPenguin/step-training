@@ -16,7 +16,7 @@
 
   <link rel="stylesheet" href="topnav.css"/>
   <div id="topnav" class = "topnav" w3-include-html="topnav.html" >
-    <a id="logoBox" href= "index.html#home">
+    <a id="logoBox" href= "index.html#">
       <img
         id ="logo"
         src= "https://cdn6.f-cdn.com/contestentries/363431/6597075/56d7ded7655e2_thumb900.jpg"
@@ -24,11 +24,8 @@
 
       />
     </a>
-    <!-- <a id="index.html" href="index.html#home">Home</a>
-    <a id="RPS.html" href="RPS.html">RPS</a>
-    <a id="pong.html" href="pong.html">Pong</a>
-    <a id="newPost.html" href="newPost.html">Post!</a>
-    <a id="viewPosts.html" href="viewPosts.html">Post Page</a> -->
+    <a id="index.html" href="index.html#">Home</a>
+    <a id="blog.html" href="blog.html">Blog</a>
   </div id="topnav">
 
   <img id="easterEggPikachu"
@@ -43,13 +40,7 @@
   <div id="home" class="main">
     <h1 id="mainTitle">Alex Kim</h1>
     <div class="divider"></div>
-    <section id="topButtonContainers" class="rowFlexBox">
-      <button id="likeButton"> Like!</button>
-      <button id="subscribeButton"> Subscribe! </button>
-    </section>
-    <div class="red","blue"></div>
 
-    <h2> About Me! </h2>
     <div id = "aboutme" class="rowFlexbox">
       <div id ="picAndLinks">
         <img
@@ -58,7 +49,7 @@
           alt = "Picture of myself"
         />
         <div id="links" class="rowFlexbox">
-          <a id="githubLink"
+          <a id="githubLink" class="logo"
             href="https://github.com/FluffyPenguin">
             <img
               id="githubLogo"
@@ -67,7 +58,7 @@
               alt = "Github"
             />
           </a>
-          <a id="linkedInLink"
+          <a id="linkedInLink" class="logo"
             href="https://www.linkedin.com/in/alexkimt/">
             <img
               id="inLogo"
@@ -80,7 +71,7 @@
       </div>
       <div id="aboutMeText">
         <p>
-          Hello! I'm Alex Kim, a rising second year CS major attending Georgia Tech! I was born and raised all my life in the suburbs of Atlanta, Georgia.
+          Hello! I'm Alex, a rising second year CS major attending Georgia Tech! I was born and raised all my life in the suburbs of Atlanta, Georgia.
         </p>
         <p>
           I'm interested in robotics, new tech, artificial intelligence, and much more!
@@ -110,13 +101,15 @@
     <br/>
 
     <!-- <button onclick="getResponse()" id="helloTxt"> Get Comments </button> -->
-    <form id="commentForm" action="/data-comments" method="POST">
+    <form id="commentForm" onsubmit="postComment(); return false">
       <label for="commentText"> Post a comment! </label>
       <br/>
       <textarea required id="commentText" name="commentText"></textarea>
-      <input type="submit" />
+      <input type="submit" value="Post" />
     </form>
-
+    <label for="maxNumComments"> # Comments to Display </label>
+    <input onchange="getComments()" type="number" id="maxNumComments" name="maxNumComments" min="1" max="10000" required value=100>
+    <br/>
     <div id="commentDiv"> </div>
   
 </div id ="home">

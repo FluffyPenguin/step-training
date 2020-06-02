@@ -25,8 +25,6 @@ const arrEqual = (arr1, arr2) => { //returns true if arr1 and arr2 have the same
   return true;
 }
 
-let subscribed = false;
-let liked = false;
 //easter eggs
 const konami = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "KeyA", "KeyB"];
 const konamiCheck = [];
@@ -49,45 +47,6 @@ pikachuMeme.addEventListener("click", (event) => {
     alert("Look what you've done now");
   }
 });
-
-//like button event listeners
-const likeButton = document.querySelector("#likeButton");
-likeButton.addEventListener("click", (event) => {
-  likeButton.innerHTML = "Liked!";
-  likeButton.style.backgroundColor = "green";
-  liked = true;
-});
-
-likeButton.addEventListener("mouseover", (e) => {
-  if (liked) return;
-  likeButton.style.backgroundColor = "lightgreen";
-});
-
-likeButton.addEventListener("mouseout", (e) => {
-  if (liked) return;
-  likeButton.style.backgroundColor = "white";
-
-});
-//subscribe button event listeners
-//-------------------------
-const subscribeButton = document.querySelector("#subscribeButton");
-subscribeButton.addEventListener("click", (event) => {
-  subscribeButton.innerHTML = "Subscribed!";
-  subscribeButton.style.backgroundColor = "green";
-  subscribed = true;
-});
-
-subscribeButton.addEventListener("mouseover", (e) => {
-  if (subscribed) return;
-  subscribeButton.style.backgroundColor = "lightgreen";
-});
-
-subscribeButton.addEventListener("mouseout", (e) => {
-  if (subscribed) return;
-  subscribeButton.style.backgroundColor = "white";
-
-});
-//END subscribe button event listeners
 
 //make the title random color when clicked
 const mainTitle = document.querySelector("#mainTitle");
@@ -144,10 +103,25 @@ window.addEventListener("keydown", (e) => {
 
 //Fetch
 const getComments = async () => {
-  const response = await fetch('/data-comments');
+  
+  const numComments = document.querySelector("#maxNumComments").value;
+  const response = await fetch('/data-comments?maxNumComments=' + numComments);
+  
   const comments = await response.json();
   const commentDiv = document.getElementById('commentDiv');
+  commentDiv.innerText = "";
   comments.forEach(comment => commentDiv.innerText += comment + "\n");
+}
+
+const commentText = document.querySelector("#commentText");
+const postComment = async() => {
+  let comment = commentText.value;
+  commentText.value = "";
+  await fetch("/data-comments", {
+      method: "POST",
+      body: new URLSearchParams({"commentText" : comment})
+    });
+  commentDiv.innerText = comment + "\n" + commentDiv.innerText;
 }
 
 
