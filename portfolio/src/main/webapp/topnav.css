@@ -43,6 +43,7 @@ hr {
   overflow: hidden;
   background-color: #333;
   display:flex;
+  justify-content: space-between;
 }
 
 /* Style the links inside the navigation bar */

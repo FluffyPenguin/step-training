@@ -125,3 +125,10 @@ const postComment = async() => {
 }
 
 
+const authDiv = document.querySelector('#authDiv');
+const loadAuthHTML = async() => {
+  const response = await fetch('/auth');
+  const authHTML = await response.text();
+  authDiv.innerHTML = authHTML;
+}
+loadAuthHTML();
