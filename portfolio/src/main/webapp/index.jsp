@@ -83,19 +83,7 @@
       alt = "pikachu meme"
     />
     <br/>
-
-    <!-- <button onclick="getResponse()" id="helloTxt"> Get Comments </button> -->
-    <form id="commentForm" onsubmit="postComment(); return false">
-      <label for="commentText"> Post a comment! </label>
-      <br/>
-      <textarea required id="commentText" name="commentText"></textarea>
-      <input type="submit" value="Post" />
-    </form>
-    <label for="maxNumComments"> # Comments to Display </label>
-    <input onchange="getComments()" type="number" id="maxNumComments" name="maxNumComments" min="1" max="10000" required value=100>
-    <br/>
-    <div id="commentDiv"> </div>
-  
+  	<br/>
 </div id ="home">
 
 
