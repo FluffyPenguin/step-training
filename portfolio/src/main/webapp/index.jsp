@@ -9,7 +9,7 @@
 
 </head>
 
-<body onload="getComments()">
+<body onload="loadDynamicContent()">
   <%@include file="topnav.html" %>
 
   <img id="easterEggPikachu"

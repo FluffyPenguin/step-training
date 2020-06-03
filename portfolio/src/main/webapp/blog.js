@@ -13,40 +13,10 @@
 // limitations under the License.
 
 
-const arrEqual = (arr1, arr2) => { //returns true if arr1 and arr2 have the same elements.
-  if (arr1.length != arr2.length) {
-    return false;
-  }
-  for (let i = 0; i < arr1.length; i++) {
-    if (arr1[i] != arr2[i]) {
-      return false;
-    }
-  }
-  return true;
-}
-
-//easter eggs
-const konami = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "KeyA", "KeyB"];
-const konamiCheck = [];
-const penguin = ["KeyP", "KeyE", "KeyN", "KeyG", "KeyU", "KeyI", "KeyN"];
-const penguinCheck = [];
-
 //activate correct header button
 // const topNavBtn = document.getElementById("index.html");
 // topNavBtn.className = "active";
 
-const pikachuMeme = document.querySelector("#pikachuMeme");
-pikachuMeme.style.opacity = "1";
-pikachuMeme.addEventListener("click", (event) => {
-  if (parseFloat(pikachuMeme.style.opacity) == 1) {
-    alert("Don't click my pikachu");
-  }
-  if (parseFloat(pikachuMeme.style.opacity) > 0) {
-    pikachuMeme.style.opacity = parseFloat(pikachuMeme.style.opacity) - 0.1;
-  } else{
-    alert("Look what you've done now");
-  }
-});
 
 //make the title random color when clicked
 const mainTitle = document.querySelector("#mainTitle");
@@ -57,48 +27,6 @@ mainTitle.addEventListener("click", (e) => {
   h2s.forEach((h2Obj) => {
     h2Obj.style.color = mainTitle.style.color;
   })
-});
-
-
-//secret Konami Code ;o
-const checkKonami = (e) => {
-  konamiCheck.push(e.code);
-  if (konamiCheck.length > 10) {
-    konamiCheck.shift(); //removes the first elem of array
-  }
-  if (arrEqual(konami, konamiCheck)) { //KONAMI CODE ENTERED :OO
-    //mainTitle.style.color = "red";
-    const easterEggPikachu = document.querySelector("#easterEggPikachu");
-    easterEggPikachu.style.height = "100%";
-    easterEggPikachu.style.width = "100%";
-    easterEggPikachu.style.display = "block"; //make it visible
-
-    //frogger!
-    // setTimeout(() => {
-    //   window.location.href = "frogger.html";
-    // }, 500);
-  }
-  //console.log(konamiCheck);
-}; //end check Konami
-
-//penguin easter egg
-const checkPenguin = (e) => {
-  penguinCheck.push(e.code);
-  if (penguinCheck.length > 7) {
-    penguinCheck.shift();
-  }
-  if (arrEqual(penguin, penguinCheck)) {
-    const easterEggPenguin = document.querySelector("#easterEggPenguin");
-    easterEggPenguin.style.height = "100%";
-    easterEggPenguin.style.width = "100%";
-    easterEggPenguin.style.display = "block"; //make it visible
-  }
-};
-const body = document.querySelector("body");
-window.addEventListener("keydown", (e) => {
-  checkKonami(e);
-  checkPenguin(e);
-
 });
 
 //Fetch
@@ -131,4 +59,9 @@ const loadAuthHTML = async() => {
   const authHTML = await response.text();
   authDiv.innerHTML = authHTML;
 }
-loadAuthHTML();
+
+const loadDynamicContent = async() => {
+	loadAuthHTML();
+  getComments();
+}
+
