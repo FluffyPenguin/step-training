@@ -14,7 +14,18 @@
 
   <div id="home" class="main">
     <h1 id="mainTitle">Alex Kim</h1>
-    <p> WIP </p>
+    <div class="blogPost">
+      <h2> Blog Post Title </h2>
+      	<p> 
+        	This is an example blog post. Currently this is hardcoded. 
+          Hello there if you are reading this far! From now on, this text won't make much sense!
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt 
+          ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco 
+          laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in 
+          voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
+          non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." 
+        </p>
+    </div>
 
     <!-- <button onclick="getResponse()" id="helloTxt"> Get Comments </button> -->
     <form id="commentForm" onsubmit="postComment(); return false">
