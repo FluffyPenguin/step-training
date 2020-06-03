@@ -34,7 +34,7 @@
 
 
 
-<script src="script.js"> </script>
+<script src="blog.js"> </script>
 <!-- link at the bottom to reduce load time -->
 </body>
 </html>

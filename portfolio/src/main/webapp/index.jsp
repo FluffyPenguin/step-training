@@ -102,7 +102,7 @@
 
 
 
-<script src="script.js"> </script>
+<script src="index.js"> </script>
 <!-- link at the bottom to reduce load time -->
 </body>
 </html>
