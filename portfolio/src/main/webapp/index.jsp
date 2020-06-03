@@ -4,29 +4,13 @@
 <head>
   <title>Alex Kim</title>
   <link rel="stylesheet" href="style.css"/>
-  <!--{% include "templates/head.html" %}-->
-  <!-- html content to be put in the head of every html file -->
-  <link rel="icon" type="image/png" sizes="32x32" href="imgs/favicon-32x32.png"/>
+  <%@include file="head.html" %>
 
 
 </head>
 
 <body onload="getComments()">
-  <!--{% include "templates/topnav.html" %}-->
-
-  <link rel="stylesheet" href="topnav.css"/>
-  <div id="topnav" class = "topnav" w3-include-html="topnav.html" >
-    <a id="logoBox" href= "index.html#">
-      <img
-        id ="logo"
-        src= "https://cdn6.f-cdn.com/contestentries/363431/6597075/56d7ded7655e2_thumb900.jpg"
-        alt = "Logo"
-
-      />
-    </a>
-    <a id="index.html" href="index.html#">Home</a>
-    <a id="blog.html" href="blog.html">Blog</a>
-  </div id="topnav">
+  <%@include file="topnav.html" %>
 
   <img id="easterEggPikachu"
     src="https://i.kym-cdn.com/entries/icons/original/000/027/475/Screen_Shot_2018-10-25_at_11.02.15_AM.png"
