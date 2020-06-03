@@ -3,7 +3,7 @@
 
 <head>
   <title>Alex Kim</title>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="index.css"/>
   <%@include file="head.html" %>
 
 
