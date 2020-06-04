@@ -3,7 +3,7 @@
 
 <head>
   <title>Alex Kim</title>
-  <link rel="stylesheet" href="index.css"/>
+  <link rel="stylesheet" href="static/styles/index.css"/>
   <%@include file="head.html" %>
 
 
@@ -29,7 +29,7 @@
       <div id ="picAndLinks">
         <img
           id="selfPicture"
-          src = "imgs/self.jpg"
+          src = "static/imgs/self.jpg"
           alt = "Picture of myself"
         />
         <div id="links" class="rowFlexbox">
@@ -38,7 +38,7 @@
             <img
               id="githubLogo"
               class="logo"
-              src="imgs/GitHub.png"
+              src="static/imgs/GitHub.png"
               alt = "Github"
             />
           </a>
@@ -47,7 +47,7 @@
             <img
               id="inLogo"
               class="logo"
-              src="imgs/LI.png"
+              src="static/imgs/LI.png"
               alt = "LinkedIn"
             />
           </a>
@@ -90,7 +90,7 @@
 
 
 
-<script src="index.js"> </script>
+<script src="static/scripts/index.js"> </script>
 <!-- link at the bottom to reduce load time -->
 </body>
 </html>

@@ -3,7 +3,7 @@
 
 <head>
   <title>Alex Kim's Blog</title>
-  <link rel="stylesheet" href="blog.css"/>
+  <link rel="stylesheet" href="static/styles/blog.css"/>
   <%@include file="head.html" %>
 
 
@@ -44,7 +44,7 @@
 
 
 
-<script src="blog.js"> </script>
+<script src="static/scripts/blog.js"> </script>
 <!-- link at the bottom to reduce load time -->
 </body>
 </html>
