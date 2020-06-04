@@ -1,0 +1,10 @@
+.blogPost {
+  max-width: 50vw;
+}
+#commentText {
+  width: 50vw;
+  height: 100%;
+}
+#postCommentBtn {
+	float:right;
+}

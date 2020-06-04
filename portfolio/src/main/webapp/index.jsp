@@ -3,13 +3,13 @@
 
 <head>
   <title>Alex Kim</title>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="index.css"/>
   <%@include file="head.html" %>
 
 
 </head>
 
-<body onload="getComments()">
+<body onload="loadDynamicContent()">
   <%@include file="topnav.html" %>
 
   <img id="easterEggPikachu"
@@ -83,26 +83,14 @@
       alt = "pikachu meme"
     />
     <br/>
-
-    <!-- <button onclick="getResponse()" id="helloTxt"> Get Comments </button> -->
-    <form id="commentForm" onsubmit="postComment(); return false">
-      <label for="commentText"> Post a comment! </label>
-      <br/>
-      <textarea required id="commentText" name="commentText"></textarea>
-      <input type="submit" value="Post" />
-    </form>
-    <label for="maxNumComments"> # Comments to Display </label>
-    <input onchange="getComments()" type="number" id="maxNumComments" name="maxNumComments" min="1" max="10000" required value=100>
-    <br/>
-    <div id="commentDiv"> </div>
-  
+  	<br/>
 </div id ="home">
 
 
 
 
 
-<script src="script.js"> </script>
+<script src="index.js"> </script>
 <!-- link at the bottom to reduce load time -->
 </body>
 </html>
