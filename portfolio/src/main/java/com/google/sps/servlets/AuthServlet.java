@@ -52,13 +52,11 @@ public class AuthServlet extends HttpServlet {
     UserService userService = UserServiceFactory.getUserService();
     if (userService.isUserLoggedIn()) {
       //String urlToRedirectToAfterUserLogsOut = request.getHeader("referer");
-      String urlToRedirectToAfterUserLogsOut = "/createProfile";
-      String logoutUrl = userService.createLogoutURL(urlToRedirectToAfterUserLogsOut);
+      String logoutUrl = userService.createLogoutURL("/createProfile");
       response.getWriter().println("<a href=\"" + logoutUrl + "\">Logout</a>");
     } else {
       //String urlToRedirectToAfterUserLogsIn = request.getHeader("referer");
-      String urlToRedirectToAfterUserLogsIn = "/createProfile";
-      String loginUrl = userService.createLoginURL(urlToRedirectToAfterUserLogsIn);
+      String loginUrl = userService.createLoginURL(/createProfile);
       response.getWriter().println("<a href=\"" + loginUrl + "\">Log in</a>");
     }
   }
