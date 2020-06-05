@@ -30,7 +30,7 @@
           non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." 
         </p>
       <hr width="80%">
-    	<form id="commentForm" onsubmit="postComment(); return false">
+    	<form id="commentForm" action="/data-comments" method="POST">
       	<h2> Comments </h2>
         <textarea required id="commentText" name="commentText"></textarea>
         <input id="postCommentBtn" type="submit" value="Post" />
