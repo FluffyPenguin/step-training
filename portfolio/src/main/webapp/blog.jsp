@@ -1,9 +1,13 @@
+<%@page import="java.util.ArrayList"%>
+<%@page import="com.google.sps.data.Comment"%>
+<%@page import="com.google.appengine.api.datastore.DatastoreService"%>
+
 <!DOCTYPE html>
 <html>
 
 <head>
   <title>Alex Kim's Blog</title>
-  <link rel="stylesheet" href="blog.css"/>
+  <link rel="stylesheet" href="static/styles/blog.css"/>
   <%@include file="head.html" %>
 
 
@@ -26,7 +30,7 @@
           non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." 
         </p>
       <hr width="80%">
-    	<form id="commentForm" onsubmit="postComment(); return false">
+    	<form id="commentForm" action="/data-comments" method="POST">
       	<h2> Comments </h2>
         <textarea required id="commentText" name="commentText"></textarea>
         <input id="postCommentBtn" type="submit" value="Post" />
@@ -34,7 +38,19 @@
       <label for="maxNumComments"> # Comments to Display </label>
       <input onchange="getComments()" type="number" id="maxNumComments" name="maxNumComments" min="1" max="10000" required value=100>
       <br/>
-      <div id="commentDiv"> </div>
+      <div id="commentDiv"> 
+        <% 
+          DatastoreService datastore = (DatastoreService) request.getAttribute("datastore");
+          ArrayList<Comment> comments = (ArrayList<Comment>) request.getAttribute("comments");
+          
+          for (Comment comment : comments) {
+            String userName = (String) datastore.get(comment.getUserKey()).getProperty("username");
+            out.print(userName + ": " + comment.getCommentText());
+            out.print("<br/>");
+
+          }
+        %>
+      </div>
     </div>
     
   
@@ -44,7 +60,7 @@
 
 
 
-<script src="blog.js"> </script>
+<script src="static/scripts/blog.js"> </script>
 <!-- link at the bottom to reduce load time -->
 </body>
 </html>

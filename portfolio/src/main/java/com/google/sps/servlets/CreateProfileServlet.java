@@ -22,6 +22,10 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
+import com.google.appengine.api.users.User;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
@@ -29,10 +33,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletException;
 
-/** Servlet that returns some example content. TODO: modify this file to handle comments data */
-@WebServlet("/data-comments")
-public class DataServlet extends HttpServlet {
+/** Servlet that handles requests to the blog page */
+@WebServlet("/createProfile")
+public class CreateProfileServlet extends HttpServlet {
   private List<String> comments;
   private Gson gson;
   private DatastoreService datastore;
@@ -44,28 +49,50 @@ public class DataServlet extends HttpServlet {
     
   }
   @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    int maxNumComments = getNumParameter(request, "maxNumComments");
-    comments = new ArrayList<>(maxNumComments);
-    Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
-    PreparedQuery results = datastore.prepare(query);
-    for (Entity comment : results.asIterable()) {
-      if (comments.size() == maxNumComments) {
-        break;
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    response.setContentType("text/html;");
+    UserService userService = UserServiceFactory.getUserService();
+    if (userService.isUserLoggedIn()) {
+      User user = userService.getCurrentUser();
+      Query query =
+        new Query("User")
+            .setFilter(new Query.FilterPredicate("id", Query.FilterOperator.EQUAL, user.getUserId()));
+      PreparedQuery results = datastore.prepare(query);
+      Entity userEntity = results.asSingleEntity();
+      if (userEntity != null) { //already has account
+        response.sendRedirect("/");
+        return;
       }
-      comments.add((String) comment.getProperty("text"));
+      //show page to make an account
+      request.getRequestDispatcher("createProfile.jsp").include(request, response);
+    } else {
+      //shouldn't be here without being logged in
+      response.sendRedirect("/");
     }
-    String jsonComments = gson.toJson(comments);
-    response.setContentType("application/json;");
-    response.getWriter().println(jsonComments);
   }
+
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Entity commentEntity = new Entity("Comment");
-    commentEntity.setProperty("timestamp",System.currentTimeMillis());
-    commentEntity.setProperty("text", getParameter(request, "commentText"));
-    datastore.put(commentEntity);
+    UserService userService = UserServiceFactory.getUserService();
+    if (userService.isUserLoggedIn()) {
+      User user = userService.getCurrentUser();
+      String userId = user.getUserId();
+      Query query =
+        new Query("User")
+            .setFilter(new Query.FilterPredicate("id", Query.FilterOperator.EQUAL, userId));
+      PreparedQuery results = datastore.prepare(query);
+      if (results.asSingleEntity() != null) { //already has account
+        response.sendRedirect("/");
+        return;
+      }
+      //make User entity in datastore
+      Entity userEntity = new Entity("User");
+      userEntity.setProperty("id", userId);
+      userEntity.setProperty("username", getParameter(request, "username"));
+      datastore.put(userEntity);
+    } 
     response.sendRedirect("/");
+    
   }
 
   /**

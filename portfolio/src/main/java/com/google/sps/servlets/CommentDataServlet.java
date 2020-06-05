@@ -21,9 +21,12 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
+import com.google.appengine.api.users.User;
 
 import java.io.IOException;
 import java.util.List;
@@ -32,12 +35,13 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletException;
 
-/** Servlet that handles requests to the blog page */
-@WebServlet("/auth")
-public class AuthServlet extends HttpServlet {
-  private List<String> comments;
+import com.google.sps.data.Comment;
+
+/** Servlet that handles comment data.*/
+@WebServlet("/data-comments")
+public class CommentDataServlet extends HttpServlet {
+  private List<Comment> comments;
   private Gson gson;
   private DatastoreService datastore;
   @Override
@@ -48,19 +52,42 @@ public class AuthServlet extends HttpServlet {
     
   }
   @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-    response.setContentType("text/html");
-    UserService userService = UserServiceFactory.getUserService();
-    if (userService.isUserLoggedIn()) {
-      String logoutUrl = userService.createLogoutURL(request.getHeader("referer"));
-      response.getWriter().println("<a href=\"" + logoutUrl + "\">Logout</a>");
-    } else {
-      //String urlToRedirectToAfterUserLogsIn = request.getHeader("referer");
-      String loginUrl = userService.createLoginURL("/createProfile");
-      response.getWriter().println("<a href=\"" + loginUrl + "\">Log in</a>");
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{
+    //int maxNumComments = getNumParameter(request, "maxNumComments");
+    int maxNumComments = 100;
+    comments = new ArrayList<>(maxNumComments);
+    Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
+    PreparedQuery results = datastore.prepare(query);
+    for (Entity commentEntity : results.asIterable()) {
+      if (comments.size() == maxNumComments) {
+        break;
+      }
+      Comment comment = new Comment(commentEntity);
+      comments.add(comment);
     }
+    request.setAttribute("datastore", datastore);
+    request.setAttribute("comments", comments);
+    // String jsonComments = gson.toJson(comments);
+    // response.setContentType("application/json;");
+    // response.getWriter().println(jsonComments);
   }
-  
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    Entity userEntity = getUserEntity();
+    if (userEntity == null) { //need to login or make account
+      //send to login
+      UserService userService = UserServiceFactory.getUserService();
+      if (userService.isUserLoggedIn()) {
+        response.sendRedirect("/createProfile");
+      } else {
+        response.sendRedirect(userService.createLoginURL("/createProfile"));
+      }
+      return;
+    }
+    Comment newComment = new Comment(userEntity.getKey(), getParameter(request,"commentText"));
+    datastore.put(newComment.asEntity());
+    response.sendRedirect(request.getHeader("referer"));
+  }
 
   /**
    * @param request the HttpServletRequest made by the client
@@ -89,5 +116,22 @@ public class AuthServlet extends HttpServlet {
       throw new IllegalArgumentException("Specified parameter not found.");
     }
     return Integer.parseInt(value);
+  }
+  /**
+   * @return an entity object of the user if they are logged in and have registered an account
+   *         null if the user has not logged in or has not registered an account
+   */
+  private Entity getUserEntity() {
+    UserService userService = UserServiceFactory.getUserService();
+    if (userService.isUserLoggedIn()) {
+      User user = userService.getCurrentUser();
+      String userId = user.getUserId();
+      Query query =
+        new Query("User")
+            .setFilter(new Query.FilterPredicate("id", Query.FilterOperator.EQUAL, userId));
+      PreparedQuery results = datastore.prepare(query);
+      return results.asSingleEntity();
+    }
+    return null;
   }
 }
