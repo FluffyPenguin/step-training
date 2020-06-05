@@ -36,10 +36,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.sps.data.Comment;
+
 /** Servlet that handles comment data.*/
 @WebServlet("/data-comments")
 public class CommentDataServlet extends HttpServlet {
-  private List<String> comments;
+  private List<Comment> comments;
   private Gson gson;
   private DatastoreService datastore;
   @Override
@@ -51,26 +53,30 @@ public class CommentDataServlet extends HttpServlet {
   }
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{
-    int maxNumComments = getNumParameter(request, "maxNumComments");
+    //int maxNumComments = getNumParameter(request, "maxNumComments");
+    int maxNumComments = 100;
     comments = new ArrayList<>(maxNumComments);
     Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
     PreparedQuery results = datastore.prepare(query);
-    for (Entity comment : results.asIterable()) {
+    for (Entity commentEntity : results.asIterable()) {
       if (comments.size() == maxNumComments) {
         break;
       }
-      //TODO: Add comment data object
-      String userName;
-      try {
-        userName = (String) datastore.get((Key) comment.getProperty("userKey")).getProperty("username");
-      } catch (EntityNotFoundException e) {
-        userName = "";
-      }
-      comments.add(userName + ": " + (String) comment.getProperty("text"));
+      Comment comment = new Comment(commentEntity);
+      // String userName;
+      // try {
+      //   userName = (String) datastore.get(comment.getUserKey()).getProperty("username");
+      // } catch (EntityNotFoundException e) {
+      //   userName = "";
+      // }
+      comments.add(comment);
     }
-    String jsonComments = gson.toJson(comments);
-    response.setContentType("application/json;");
-    response.getWriter().println(jsonComments);
+    request.setAttribute("datastore", datastore);
+    request.setAttribute("comments", comments);
+    request.setAttribute("hello", "hi");
+    // String jsonComments = gson.toJson(comments);
+    // response.setContentType("application/json;");
+    // response.getWriter().println(jsonComments);
   }
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -85,11 +91,8 @@ public class CommentDataServlet extends HttpServlet {
       }
       return;
     }
-    Entity commentEntity = new Entity("Comment");
-    commentEntity.setProperty("timestamp",System.currentTimeMillis());
-    commentEntity.setProperty("text", getParameter(request, "commentText"));
-    commentEntity.setProperty("userKey", userEntity.getKey());
-    datastore.put(commentEntity);
+    Comment newComment = new Comment(userEntity.getKey(), getParameter(request,"commentText"));
+    datastore.put(newComment.asEntity());
     response.sendRedirect(request.getHeader("referer"));
   }
 
@@ -117,7 +120,8 @@ public class CommentDataServlet extends HttpServlet {
   private int getNumParameter(HttpServletRequest request, String name) {
     String value = request.getParameter(name);
     if (value == null) {
-      throw new IllegalArgumentException("Specified parameter not found.");
+      //throw new IllegalArgumentException("Specified parameter not found.");
+      return 100;
     }
     return Integer.parseInt(value);
   }

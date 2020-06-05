@@ -47,7 +47,8 @@ public class BlogServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
     response.setContentType("text/html;");
-    request.getRequestDispatcher("blog.jsp").include(request, response);
+    request.getRequestDispatcher("/data-comments").include(request, response);
+    request.getRequestDispatcher("blog.jsp").forward(request, response);
 
     
     //response.getWriter().println(jsonComments);

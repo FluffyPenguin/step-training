@@ -1,3 +1,7 @@
+<%@page import="java.util.ArrayList"%>
+<%@page import="com.google.sps.data.Comment"%>
+<%@page import="com.google.appengine.api.datastore.DatastoreService"%>
+
 <!DOCTYPE html>
 <html>
 
@@ -34,7 +38,19 @@
       <label for="maxNumComments"> # Comments to Display </label>
       <input onchange="getComments()" type="number" id="maxNumComments" name="maxNumComments" min="1" max="10000" required value=100>
       <br/>
-      <div id="commentDiv"> </div>
+      <div id="commentDiv"> 
+        <% 
+          DatastoreService datastore = (DatastoreService) request.getAttribute("datastore");
+          ArrayList<Comment> comments = (ArrayList<Comment>) request.getAttribute("comments");
+          
+          for (Comment comment : comments) {
+            String userName = (String) datastore.get(comment.getUserKey()).getProperty("username");
+            out.print(userName + ": " + comment.getCommentText());
+            out.print("<br/>");
+
+          }
+        %>
+      </div>
     </div>
     
   

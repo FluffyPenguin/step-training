@@ -49,7 +49,7 @@ const postComment = async() => {
       method: "POST",
       body: new URLSearchParams({"commentText" : comment})
     });
-  commentDiv.innerText = comment + "\n" + commentDiv.innerText;
+  location.reload();
 }
 
 
@@ -62,6 +62,6 @@ const loadAuthHTML = async() => {
 
 const loadDynamicContent = async() => {
 	loadAuthHTML();
-  getComments();
+  //getComments();
 }
 
