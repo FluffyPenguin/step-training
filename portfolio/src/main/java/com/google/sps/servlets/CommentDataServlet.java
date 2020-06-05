@@ -63,17 +63,10 @@ public class CommentDataServlet extends HttpServlet {
         break;
       }
       Comment comment = new Comment(commentEntity);
-      // String userName;
-      // try {
-      //   userName = (String) datastore.get(comment.getUserKey()).getProperty("username");
-      // } catch (EntityNotFoundException e) {
-      //   userName = "";
-      // }
       comments.add(comment);
     }
     request.setAttribute("datastore", datastore);
     request.setAttribute("comments", comments);
-    request.setAttribute("hello", "hi");
     // String jsonComments = gson.toJson(comments);
     // response.setContentType("application/json;");
     // response.getWriter().println(jsonComments);
@@ -120,8 +113,7 @@ public class CommentDataServlet extends HttpServlet {
   private int getNumParameter(HttpServletRequest request, String name) {
     String value = request.getParameter(name);
     if (value == null) {
-      //throw new IllegalArgumentException("Specified parameter not found.");
-      return 100;
+      throw new IllegalArgumentException("Specified parameter not found.");
     }
     return Integer.parseInt(value);
   }
