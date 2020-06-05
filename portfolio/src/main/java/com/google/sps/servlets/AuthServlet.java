@@ -21,6 +21,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
@@ -51,12 +52,11 @@ public class AuthServlet extends HttpServlet {
     response.setContentType("text/html");
     UserService userService = UserServiceFactory.getUserService();
     if (userService.isUserLoggedIn()) {
-      //String urlToRedirectToAfterUserLogsOut = request.getHeader("referer");
-      String logoutUrl = userService.createLogoutURL("/createProfile");
+      String logoutUrl = userService.createLogoutURL(request.getHeader("referer"));
       response.getWriter().println("<a href=\"" + logoutUrl + "\">Logout</a>");
     } else {
       //String urlToRedirectToAfterUserLogsIn = request.getHeader("referer");
-      String loginUrl = userService.createLoginURL(/createProfile);
+      String loginUrl = userService.createLoginURL("/createProfile");
       response.getWriter().println("<a href=\"" + loginUrl + "\">Log in</a>");
     }
   }

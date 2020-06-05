@@ -21,6 +21,12 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
+import com.google.appengine.api.users.User;
 
 import java.io.IOException;
 import java.util.List;
@@ -30,7 +36,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/** Servlet that returns some example content. TODO: modify this file to handle comments data */
+/** Servlet that handles comment data.*/
 @WebServlet("/data-comments")
 public class CommentDataServlet extends HttpServlet {
   private List<String> comments;
@@ -44,7 +50,7 @@ public class CommentDataServlet extends HttpServlet {
     
   }
   @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{
     int maxNumComments = getNumParameter(request, "maxNumComments");
     comments = new ArrayList<>(maxNumComments);
     Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
@@ -53,7 +59,14 @@ public class CommentDataServlet extends HttpServlet {
       if (comments.size() == maxNumComments) {
         break;
       }
-      comments.add((String) comment.getProperty("text"));
+      //TODO: Add comment data object
+      String userName;
+      try {
+        userName = (String) datastore.get((Key) comment.getProperty("userKey")).getProperty("username");
+      } catch (EntityNotFoundException e) {
+        userName = "";
+      }
+      comments.add(userName + ": " + (String) comment.getProperty("text"));
     }
     String jsonComments = gson.toJson(comments);
     response.setContentType("application/json;");
@@ -61,11 +74,23 @@ public class CommentDataServlet extends HttpServlet {
   }
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    Entity userEntity = getUserEntity();
+    if (userEntity == null) { //need to login or make account
+      //send to login
+      UserService userService = UserServiceFactory.getUserService();
+      if (userService.isUserLoggedIn()) {
+        response.sendRedirect("/createProfile");
+      } else {
+        response.sendRedirect(userService.createLoginURL("/createProfile"));
+      }
+      return;
+    }
     Entity commentEntity = new Entity("Comment");
     commentEntity.setProperty("timestamp",System.currentTimeMillis());
     commentEntity.setProperty("text", getParameter(request, "commentText"));
+    commentEntity.setProperty("userKey", userEntity.getKey());
     datastore.put(commentEntity);
-    response.sendRedirect("/");
+    response.sendRedirect(request.getHeader("referer"));
   }
 
   /**
@@ -95,5 +120,22 @@ public class CommentDataServlet extends HttpServlet {
       throw new IllegalArgumentException("Specified parameter not found.");
     }
     return Integer.parseInt(value);
+  }
+  /**
+   * @return an entity object of the user if they are logged in and have registered an account
+   *         null if the user has not logged in or has not registered an account
+   */
+  private Entity getUserEntity() {
+    UserService userService = UserServiceFactory.getUserService();
+    if (userService.isUserLoggedIn()) {
+      User user = userService.getCurrentUser();
+      String userId = user.getUserId();
+      Query query =
+        new Query("User")
+            .setFilter(new Query.FilterPredicate("id", Query.FilterOperator.EQUAL, userId));
+      PreparedQuery results = datastore.prepare(query);
+      return results.asSingleEntity();
+    }
+    return null;
   }
 }
