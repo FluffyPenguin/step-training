@@ -83,13 +83,12 @@
       alt = "pikachu meme"
     />
     <br/>
+    <h2> A Chart </h2>
+    <div id="chart-container"></div>
   	<br/>
 </div id ="home">
 
-
-
-
-
+<script src="https://www.gstatic.com/charts/loader.js"></script>
 <script src="static/scripts/index.js"> </script>
 <!-- link at the bottom to reduce load time -->
 </body>

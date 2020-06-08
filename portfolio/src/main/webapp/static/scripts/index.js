@@ -94,6 +94,7 @@ const checkPenguin = (e) => {
     easterEggPenguin.style.display = "block"; //make it visible
   }
 };
+
 const body = document.querySelector("body");
 window.addEventListener("keydown", (e) => {
   checkKonami(e);
@@ -107,6 +108,33 @@ const loadAuthHTML = async() => {
   const authHTML = await response.text();
   authDiv.innerHTML = authHTML;
 }
+
 const loadDynamicContent = async() => {
 	loadAuthHTML();
+}
+
+//load chart API
+google.charts.load('current', {'packages':['corechart']});
+google.charts.setOnLoadCallback(drawChart);
+
+/** Creates a chart and adds it to the page. */
+function drawChart() {
+  const data = new google.visualization.DataTable();
+  data.addColumn('string', 'Fruit');
+  data.addColumn('number', 'Count');
+        data.addRows([
+          ['Apple', 1],
+          ['Orange', 2],
+          ['Mango', 26]
+        ]);
+
+  const options = {
+    'title': 'My Fruit',
+    'width':500,
+    'height':400
+  };
+
+  const chart = new google.visualization.PieChart(
+      document.getElementById('chart-container'));
+  chart.draw(data, options);
 }
