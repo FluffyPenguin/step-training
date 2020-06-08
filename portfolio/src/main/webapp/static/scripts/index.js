@@ -131,7 +131,8 @@ function drawChart() {
   const options = {
     'title': 'My Fruit',
     'width':500,
-    'height':400
+    'height':400,
+    'backgroundColor': { fill:'transparent' }
   };
 
   const chart = new google.visualization.PieChart(
