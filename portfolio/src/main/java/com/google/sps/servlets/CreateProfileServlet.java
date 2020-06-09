@@ -45,9 +45,8 @@ public class CreateProfileServlet extends HttpServlet {
   public void init(){
     datastore = DatastoreServiceFactory.getDatastoreService();
     gson = new Gson();
-    
-    
   }
+  
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
     response.setContentType("text/html;");
