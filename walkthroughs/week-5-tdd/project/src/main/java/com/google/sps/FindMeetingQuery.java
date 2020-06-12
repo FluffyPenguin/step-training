@@ -18,17 +18,91 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public final class FindMeetingQuery {
+
+  /**
+   * @return the available times for all mandatory attendees to meet while somewhat considering
+   *         optional attendees. Only considers one optional attendee at a time.
+   */
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
-    List<TimeRange> times = new ArrayList<>();
-    if (request.getDuration() > 1440) {
-      return times;
+    List<TimeRange> mandatoryTimes = (List<TimeRange>) queryMandatoryAttendees(events, request);
+    if (request.getOptionalAttendees().size() == 0) {
+      return mandatoryTimes;
     }
-    //asume all time is valid
-    times.add(TimeRange.WHOLE_DAY);
+    List<TimeRange> newTimes = new ArrayList<>();
+    for (String optAttendee : request.getOptionalAttendees()) {
+      List<TimeRange> optAttendeeTimes = (List<TimeRange>) removeConflicts(events, mandatoryTimes, Arrays.asList(optAttendee));
+      newTimes = combine(newTimes, optAttendeeTimes);
+    }
+    //remove time slots that are too short
+    for (int i = 0; i < newTimes.size(); i++) {
+      if (newTimes.get(i).duration() < request.getDuration()) {
+        newTimes.remove(i--);
+      }
+    }
+    if (newTimes.size() == 0) {
+      if (request.getAttendees().size() == 0) {
+        return newTimes;
+      }
+      return mandatoryTimes;
+    }
+    return newTimes;
+  }
+  /**
+   * @return the combination of these two time ranges
+   */
+  private List<TimeRange> combine(List<TimeRange> times1, List<TimeRange> times2) {
+    List<TimeRange> combinedTimes = new ArrayList(times1);
+    for(TimeRange timeToAdd : times2) {
+      boolean add = true;
+      for (int i = 0; i < combinedTimes.size(); i++) {
+        TimeRange existingTime = combinedTimes.get(i);
+        if (existingTime.overlaps(timeToAdd)) {
+          //four cases of overlapping
+          if (existingTime.contains(timeToAdd.start()) && existingTime.contains(timeToAdd.end())) {
+            //timeToAdd is completely inside existingTime -> do nothing
+            add = false;
+            break;
+          } else if (timeToAdd.contains(existingTime.start()) && timeToAdd.contains(existingTime.end())) {
+            //existingTime is completely inside timeToAdd -> remove existingTime, add timeToAdd
+            //timeToAddTime:        |-|
+            //openTime:     |---------|
+            combinedTimes.remove(i);
+            combinedTimes.add(timeToAdd);
+            add = false;
+            break;
+          } else if (existingTime.contains(timeToAdd.start())) {
+            //existingTime:     |-----|
+            //timeToAdd:           |-----|
+            //-> timeToAdd becomes the combination of both, remove existingTime, and reset i
+            timeToAdd = TimeRange.fromStartEnd(existingTime.start(), timeToAdd.end(), false);
+            combinedTimes.remove(i);
+            i = -1;
+          } else {
+            //existingTime:       |-----|
+            //timeToAdd:     |-----|
+            //-> timeToAdd becomes the combination of both, remove existingTime, and reset i
+            timeToAdd = TimeRange.fromStartEnd(timeToAdd.start(), existingTime.end(), false);
+            combinedTimes.remove(i);
+            i = -1;
+          }
+        }
+      }
+      if (add) {
+        combinedTimes.add(timeToAdd);
+      }
+    }
+    return combinedTimes;
+  }
+  /**
+   * @return the times that the attendees do not have conflicts with in times
+   */
+  private Collection<TimeRange> removeConflicts(Collection<Event> events, List<TimeRange> times, Collection<String> attendees) {
+    times = new ArrayList(times); //make a copy so we don't modify the original
     for (Event event : events) {
-      if (hasOverlappingAttendendees(event.getAttendees(), request.getAttendees())) {
+      if (hasOverlappingAttendendees(event.getAttendees(), attendees)) {
         TimeRange eventTime = event.getWhen();
         for (int i = 0; i < times.size(); i++) {
           TimeRange openTime = times.get(i);
@@ -61,6 +135,19 @@ public final class FindMeetingQuery {
         }
       }
     }
+    return times;
+  }
+  /**
+   * @return the available times for all mandatory attendees to meet
+   */
+  private Collection<TimeRange> queryMandatoryAttendees(Collection<Event> events, MeetingRequest request) {
+    List<TimeRange> times = new ArrayList<>();
+    if (request.getDuration() > 1440) {
+      return times;
+    }
+    //asume all time is valid
+    times.add(TimeRange.WHOLE_DAY);
+    times = (List<TimeRange>) removeConflicts(events, times, request.getAttendees());
     //remove time slots that are too short
     for (int i = 0; i < times.size(); i++) {
       if (times.get(i).duration() < request.getDuration()) {
