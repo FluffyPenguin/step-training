@@ -23,10 +23,14 @@ import java.util.Arrays;
 public final class FindMeetingQuery {
 
   /**
-   * @return the available times for all mandatory attendees to meet while somewhat considering
-   *         optional attendees. Only considers one optional attendee at a time.
+   * @param events the collection of all events for that day
+   * @param request a meeting request which includes the required and optional attendees and the length of the meeting
+   * @return a collection of TimeRanges constituting all the available timeslots for the day.
+   *         if there are optional attendees, then it returns the time slots where at least one optional attendee
+   *         can attend as well unless there does not exist such time.
+   *         If there is no time that includes optional attendees, the timeslots for only mandatory attendees are returned
    */
-  public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
+  public Collection<TimeRange> findAllAvailableTimeslots(Collection<Event> events, MeetingRequest request) {
     List<TimeRange> mandatoryTimes = (List<TimeRange>) queryMandatoryAttendees(events, request);
     if (request.getOptionalAttendees().size() == 0) {
       return mandatoryTimes;
