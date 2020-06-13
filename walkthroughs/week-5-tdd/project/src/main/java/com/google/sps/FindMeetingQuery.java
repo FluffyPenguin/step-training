@@ -160,7 +160,7 @@ public final class FindMeetingQuery {
    * @return True if there is at least one attendee that appears in both eventAttendees and requestAttendees
    * False if there are no overlap in attendees between both sets.
    */
-  private boolean hasOverlappingAttendendees(Set<String> eventAttendees, Collection<String> requestAttendees) {
+  private boolean hasOverlappingAttendendees(Set<String> eventAttendees, Iterable<String> requestAttendees) {
     for (String requestAttendee : requestAttendees) {
       if (eventAttendees.contains(requestAttendee)) {
         return true;
