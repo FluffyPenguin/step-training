@@ -54,7 +54,7 @@ public final class FindMeetingQuery {
    * @return the combination of these two time ranges
    */
   private List<TimeRange> combine(List<TimeRange> times1, List<TimeRange> times2) {
-    List<TimeRange> combinedTimes = new ArrayList(times1);
+    List<TimeRange> combinedTimes = new ArrayList<>(times1);
     for(TimeRange timeToAdd : times2) {
       boolean add = true;
       for (int i = 0; i < combinedTimes.size(); i++) {
@@ -100,7 +100,7 @@ public final class FindMeetingQuery {
    * @return the times that the attendees do not have conflicts with in times
    */
   private Collection<TimeRange> removeConflicts(Collection<Event> events, List<TimeRange> times, Collection<String> attendees) {
-    times = new ArrayList(times); //make a copy so we don't modify the original
+    times = new ArrayList<TimeRange>(times); //make a copy so we don't modify the original
     for (Event event : events) {
       if (hasOverlappingAttendendees(event.getAttendees(), attendees)) {
         TimeRange eventTime = event.getWhen();
