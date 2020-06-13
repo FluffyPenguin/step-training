@@ -61,7 +61,7 @@ public final class FindMeetingQueryTest {
   }
 
   @Test
-  public void optionsForNoAttendees() throws Exception {
+  public void findAllAvailableTimeslots_withNoAttendees_returnsWholeDay() throws Exception {
     MeetingRequest request = new MeetingRequest(NO_ATTENDEES, DURATION_1_HOUR);
 
     Collection<TimeRange> actual = query.findAllAvailableTimeslots(NO_EVENTS, request);
@@ -71,7 +71,7 @@ public final class FindMeetingQueryTest {
   }
 
   @Test
-  public void noOptionsForTooLongOfARequest() throws Exception {
+  public void findAllAvailableTimeslots_returnsNoTimeslotsForLongerThanDayRequest() throws Exception {
     // The duration should be longer than a day. This means there should be no options.
     int duration = TimeRange.WHOLE_DAY.duration() + 1;
     MeetingRequest request = new MeetingRequest(Arrays.asList(PERSON_A), duration);
@@ -83,7 +83,7 @@ public final class FindMeetingQueryTest {
   }
 
   @Test
-  public void eventSplitsRestriction() throws Exception {
+  public void findAllAvailableTimeslots_returnsTimesSplitAroundConflictingEvent() throws Exception {
     // The event should split the day into two options (before and after the event).
     Collection<Event> events = Arrays.asList(new Event("Event 1",
         TimeRange.fromStartDuration(TIME_0830AM, DURATION_30_MINUTES), Arrays.asList(PERSON_A)));
@@ -99,7 +99,7 @@ public final class FindMeetingQueryTest {
   }
 
   @Test
-  public void everyAttendeeIsConsidered() throws Exception {
+  public void findAllAvailableTimeslots_considersEveryAttendee() throws Exception {
     // Have each person have different events. We should see two options because each person has
     // split the restricted times.
     //
@@ -126,7 +126,7 @@ public final class FindMeetingQueryTest {
   }
 
   @Test
-  public void everyAttendeeIsConsideredWithOptFullDayEvent() throws Exception {
+  public void findAllAvailableTimeslots_withOptionalAttendee_returnsTimeSlotsForRequiredAttendees() throws Exception {
     // Have each person have different events. We should see two options because each person has
     // split the restricted times.
     // There is an additional optional attendee C with an all day event. This should not affect
@@ -159,7 +159,7 @@ public final class FindMeetingQueryTest {
   }
 
   @Test
-  public void everyAttendeeIsConsideredWithOptAttendee() throws Exception {
+  public void findAllAvailableTimeslots_withOptionalAttendee_considersAllMandatoryAttendees() throws Exception {
     // Have each person have different events. We should see two options because each person has
     // split the restricted times.
     // There is an additional optional attendee C with an all day event. This should not affect
@@ -191,7 +191,7 @@ public final class FindMeetingQueryTest {
   }
 
   @Test
-  public void overlappingEvents() throws Exception {
+  public void findAllAvailableTimeslots_overlappingEvents() throws Exception {
     // Have an event for each person, but have their events overlap. We should only see two options.
     //
     // Events  :       |--A--|
@@ -217,7 +217,7 @@ public final class FindMeetingQueryTest {
   }
 
   @Test
-  public void nestedEvents() throws Exception {
+  public void findAllAvailableTimeslots_nestedEvents() throws Exception {
     // Have an event for each person, but have one person's event fully contain another's event. We
     // should see two options.
     //
@@ -244,7 +244,7 @@ public final class FindMeetingQueryTest {
   }
 
   @Test
-  public void doubleBookedPeople() throws Exception {
+  public void findAllAvailableTimeslots_doubleBookedPeople() throws Exception {
     // Have one person, but have them registered to attend two events at the same time.
     //
     // Events  :       |----A----|
@@ -269,7 +269,7 @@ public final class FindMeetingQueryTest {
   }
 
   @Test
-  public void justEnoughRoom() throws Exception {
+  public void findAllAvailableTimeslots_returnsTimeWithJustEnoughRoom() throws Exception {
     // Have one person, but make it so that there is just enough room at one point in the day to
     // have the meeting.
     //
@@ -293,7 +293,7 @@ public final class FindMeetingQueryTest {
   }
 
   @Test
-  public void justEnoughRoomWithoutOptional() throws Exception {
+  public void findAllAvailableTimeslots_withOptionalAttendee_returnsTimeWithOnlyRequiredAttendees() throws Exception {
     // Have one person, but make it so that there is just enough room at one point in the day to
     // have the meeting. Second person C is optional but their inclusion would cause for no meeting 
     // times so they should not be considered.
@@ -320,7 +320,7 @@ public final class FindMeetingQueryTest {
   }
 
   @Test
-  public void ignoresPeopleNotAttending() throws Exception {
+  public void findAllAvailableTimeslots_ignoresPeopleNotAttending() throws Exception {
     // Add an event, but make the only attendee someone different from the person looking to book
     // a meeting. This event should not affect the booking.
     Collection<Event> events = Arrays.asList(new Event("Event 1",
@@ -334,7 +334,7 @@ public final class FindMeetingQueryTest {
   }
 
   @Test
-  public void noConflicts() throws Exception {
+  public void findAllAvailableTimeslots_noConflicts() throws Exception {
     MeetingRequest request =
         new MeetingRequest(Arrays.asList(PERSON_A, PERSON_B), DURATION_30_MINUTES);
 
@@ -345,7 +345,7 @@ public final class FindMeetingQueryTest {
   }
 
   @Test
-  public void notEnoughRoom() throws Exception {
+  public void findAllAvailableTimeslots_returnsNothingWhenNotEnoughRoom() throws Exception {
     // Have one person, but make it so that there is not enough room at any point in the day to
     // have the meeting.
     //
@@ -368,7 +368,7 @@ public final class FindMeetingQueryTest {
   }
 
   @Test
-  public void noMandatoryTwoOptAttendees() throws Exception {
+  public void findAllAvailableTimeslots_withNoMandatoryAttendees_withTwoOptAttendees_returnsAllAvailabilitiesOfOptAttendees() throws Exception {
     // Event with only two optional attendees that have gaps in their day.
     // All gaps in their schedules should be returned.
     //
@@ -400,7 +400,7 @@ public final class FindMeetingQueryTest {
   }
 
   @Test
-  public void noMandatoryTwoOptAttendeesNoTime() throws Exception {
+  public void findAllAvailableTimeslots_withNoMandatoryAttendees_withTwoOptAttendeesNoTime() throws Exception {
     // Event with only two optional attendees that have no gaps in their day.
     // No time should be available.
     //
@@ -427,7 +427,7 @@ public final class FindMeetingQueryTest {
 
   @Ignore //currently ignoring for later implementation
   @Test
-  public void noMandatoryPrioritizeMaxOptAttendees() throws Exception {
+  public void findAllAvailableTimeslots_withNoMandatoryAttendees_prioritizeMaxOptAttendees() throws Exception {
     // Event with only two optional attendees that have gaps in their day.
     // One gap has both optional attendees available while the other one has one.
     // Should return only the time where both optional attendees are available.
