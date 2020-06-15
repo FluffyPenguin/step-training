@@ -157,14 +157,21 @@ public final class FindMeetingQuery {
     //asume all time is valid
     times.add(TimeRange.WHOLE_DAY);
     times = removeConflicts(events, times, request.getAttendees());
-    Queue<TimeRange> fixedTimes = new ArrayDeque<>(times.size());
+    return removeShortTimeRanges(times, request);
+  }
+  /**
+   * @return collection of TimeRanges that are all long enough to accomodate the meeting request
+   */
+  private Collection<TimeRange> removeShortTimeRanges(Queue<TimeRange> times, MeetingRequest request) {
+    Queue<TimeRange> fixedTimes = new ArrayDeque<>(times.size());  
     //remove time slots that are too short
     while (!times.isEmpty()) {
       TimeRange time = times.remove();
-      if (!times.get(i).duration() < request.getDuration()) {
+      if (time.duration() >= request.getDuration()) {
         fixedTimes.add(time);
       }
     }
+
     return fixedTimes;
   }
   /*
