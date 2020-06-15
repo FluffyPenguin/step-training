@@ -33,73 +33,72 @@ public final class FindMeetingQuery {
    *         If there is no time that includes optional attendees, the timeslots for only mandatory attendees are returned
    */
   public Collection<TimeRange> findAllAvailableTimeslots(Collection<Event> events, MeetingRequest request) {
-    List<TimeRange> mandatoryTimes = (List<TimeRange>) queryMandatoryAttendees(events, request);
+    Queue<TimeRange> mandatoryTimes = queryMandatoryAttendees(events, request);
     if (request.getOptionalAttendees().size() == 0) {
-      return mandatoryTimes;
+      return new ArrayList<TimeRange>(mandatoryTimes);
     }
-    List<TimeRange> newTimes = new ArrayList<>();
+    Queue<TimeRange> newTimes = new ArrayDeque<>();
     for (String optAttendee : request.getOptionalAttendees()) {
-      List<TimeRange> optAttendeeTimes = (List<TimeRange>) removeConflicts(events, mandatoryTimes, Arrays.asList(optAttendee));
+      Queue<TimeRange> optAttendeeTimes = removeConflicts(events, mandatoryTimes, Arrays.asList(optAttendee));
       newTimes = combine(newTimes, optAttendeeTimes);
     }
-    //remove time slots that are too short
-    for (int i = 0; i < newTimes.size(); i++) {
-      if (newTimes.get(i).duration() < request.getDuration()) {
-        newTimes.remove(i--);
-      }
-    }
+    newTimes = removeShortTimeRanges(newTimes, request);
+
     if (newTimes.size() == 0) {
       if (request.getAttendees().size() == 0) {
-        return newTimes;
+        return new ArrayList<TimeRange>(newTimes); //convert to ArrayList for Test cases
       }
-      return mandatoryTimes;
+      return new ArrayList<TimeRange>(mandatoryTimes);
     }
-    return newTimes;
+    return new ArrayList<TimeRange>(newTimes);
   }
   /**
    * @return the combination of these two time ranges
    */
-  private List<TimeRange> combine(List<TimeRange> times1, List<TimeRange> times2) {
-    List<TimeRange> combinedTimes = new ArrayList<>(times1);
-    for(TimeRange timeToAdd : times2) {
+  private Queue<TimeRange> combine(Queue<TimeRange> times1, Queue<TimeRange> times2) {
+    Queue<TimeRange> combinedTimes = new ArrayDeque<>(times1); //copies
+    Queue<TimeRange> timesToAdd = new ArrayDeque<>(times2);
+    int maxSize = combinedTimes.size() + timesToAdd.size();
+    while (!timesToAdd.isEmpty()) {
+      TimeRange timeToAdd = timesToAdd.remove();
       boolean add = true;
-      for (int i = 0; i < combinedTimes.size(); i++) {
-        TimeRange existingTime = combinedTimes.get(i);
+      Queue<TimeRange> adjCombinedTimes = new ArrayDeque<>(maxSize);
+      while (!combinedTimes.isEmpty()) {
+        TimeRange existingTime = combinedTimes.remove();
         if (existingTime.overlaps(timeToAdd)) {
           //four cases of overlapping
           if (existingTime.contains(timeToAdd.start()) && existingTime.contains(timeToAdd.end())) {
             //timeToAdd is completely inside existingTime -> do nothing
             add = false;
+            adjCombinedTimes.add(existingTime);
             break;
           } else if (timeToAdd.contains(existingTime.start()) && timeToAdd.contains(existingTime.end())) {
             //existingTime is completely inside timeToAdd -> remove existingTime, add timeToAdd
             //timeToAddTime:        |-|
             //openTime:     |---------|
-            combinedTimes.remove(i);
-            combinedTimes.add(timeToAdd);
+            adjCombinedTimes.add(timeToAdd);
             add = false;
             break;
           } else if (existingTime.contains(timeToAdd.start())) {
             //existingTime:     |-----|
             //timeToAdd:           |-----|
-            //-> timeToAdd becomes the combination of both, remove existingTime, and reset i
+            //-> timeToAdd becomes the combination of both
             timeToAdd = TimeRange.fromStartEnd(existingTime.start(), timeToAdd.end(), false);
-            combinedTimes.remove(i);
-            i = -1;
           } else {
             //existingTime:       |-----|
             //timeToAdd:     |-----|
-            //-> timeToAdd becomes the combination of both, remove existingTime, and reset i
+            //-> timeToAdd becomes the combination of both
             timeToAdd = TimeRange.fromStartEnd(timeToAdd.start(), existingTime.end(), false);
-            combinedTimes.remove(i);
-            i = -1;
           }
+        } else { //no overlap
+          adjCombinedTimes.add(existingTime);
         }
-      }
+      }//while combinedTimes is not empty
       if (add) {
-        combinedTimes.add(timeToAdd);
+        adjCombinedTimes.add(timeToAdd);
       }
-    }
+      combinedTimes = adjCombinedTimes;
+    } //while timesToAdd is not empty
     return combinedTimes;
   }
   /**
@@ -149,7 +148,7 @@ public final class FindMeetingQuery {
   /**
    * @return the available times for all mandatory attendees to meet
    */
-  private Collection<TimeRange> queryMandatoryAttendees(Collection<Event> events, MeetingRequest request) {
+  private Queue<TimeRange> queryMandatoryAttendees(Collection<Event> events, MeetingRequest request) {
     Queue<TimeRange> times = new ArrayDeque<>();
     if (request.getDuration() > 1440) {
       return times;
@@ -162,7 +161,7 @@ public final class FindMeetingQuery {
   /**
    * @return collection of TimeRanges that are all long enough to accomodate the meeting request
    */
-  private Collection<TimeRange> removeShortTimeRanges(Queue<TimeRange> times, MeetingRequest request) {
+  private Queue<TimeRange> removeShortTimeRanges(Queue<TimeRange> times, MeetingRequest request) {
     Queue<TimeRange> fixedTimes = new ArrayDeque<>(times.size());  
     //remove time slots that are too short
     while (!times.isEmpty()) {
