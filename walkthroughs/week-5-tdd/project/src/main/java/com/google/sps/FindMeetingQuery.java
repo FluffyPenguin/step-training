@@ -19,6 +19,8 @@ import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.ArrayDeque;
+import java.util.Queue;
 
 public final class FindMeetingQuery {
 
@@ -103,43 +105,46 @@ public final class FindMeetingQuery {
   /**
    * @return the times that the attendees do not have conflicts with in times
    */
-  private Collection<TimeRange> removeConflicts(Collection<Event> events, List<TimeRange> times, Collection<String> attendees) {
-    times = new ArrayList<TimeRange>(times); //make a copy so we don't modify the original
+  private Collection<TimeRange> removeConflicts(Collection<Event> events, Collection<TimeRange> times, Collection<String> attendees) {
+    Queue<TimeRange> timesQueue = new ArrayDeque<>(times); //make a copy so we don't modify the original
     for (Event event : events) {
       if (hasOverlappingAttendendees(event.getAttendees(), attendees)) {
+        Queue<TimeRange> adjTimesQueue = new ArrayDeque<>(timesQueue.size() * 2); //hold adjusted times. start size() *2 -> guarantee no resize
         TimeRange eventTime = event.getWhen();
-        for (int i = 0; i < times.size(); i++) {
-          TimeRange openTime = times.get(i);
+        while (!timesQueue.isEmpty()) {
+          TimeRange openTime = timesQueue.remove();
           //found an overlapping time in free time
           if (eventTime.overlaps(openTime)) {
             //four cases of overlapping
             if (eventTime.contains(openTime.start()) && eventTime.contains(openTime.end())) {
-              //eventTime:
-              //openTime is completely inside evenTime -> remove it from the free times
-              times.remove(i--);
+              //eventTime: |------------|
+              //openTime:        |-|
+              //openTime is completely inside evenTime -> remove it from the free times by not adding it
             } else if (openTime.contains(eventTime.start()) && openTime.contains(eventTime.end())) {
               //eventTime is completely inside openTime -> split openTime into two
               //evenTime:        |-|
               //openTime:     |---------|
-              times.remove(i--);
-              times.add(TimeRange.fromStartEnd(openTime.start(), eventTime.start(), false));
-              times.add(TimeRange.fromStartEnd(eventTime.end(), openTime.end(), false));
+              adjTimesQueue.add(TimeRange.fromStartEnd(openTime.start(), eventTime.start(), false));
+              adjTimesQueue.add(TimeRange.fromStartEnd(eventTime.end(), openTime.end(), false));
             } else if (eventTime.contains(openTime.start())) {
               //eventTime:     |-----|
               //openTime:           |-----|
               //-> remove overlapping beginning of openTime
-              times.set(i, TimeRange.fromStartEnd(eventTime.end(), openTime.end(), false));
+              adjTimesQueue.add(TimeRange.fromStartEnd(eventTime.end(), openTime.end(), false));
             } else {
               //eventTime:       |-----|
               //openTime:     |-----|
               //-> remove overlapping end of openTime
-              times.set(i, TimeRange.fromStartEnd(openTime.start(), eventTime.start(), false));
+              adjTimesQueue.add(TimeRange.fromStartEnd(openTime.start(), eventTime.start(), false));
             }
+          } else { //no overlap in times, no need to change it
+            adjTimesQueue.add(openTime);
           }
-        }
+        } //end while over timesQueue
+        timesQueue = adjTimesQueue;
       }
     }
-    return times;
+    return timesQueue;
   }
   /**
    * @return the available times for all mandatory attendees to meet
