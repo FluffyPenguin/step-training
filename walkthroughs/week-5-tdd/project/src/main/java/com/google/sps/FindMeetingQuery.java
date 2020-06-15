@@ -103,9 +103,9 @@ public final class FindMeetingQuery {
     return combinedTimes;
   }
   /**
-   * @return the times that the attendees do not have conflicts with in times
+   * @return a Queue with the times that the attendees do not have conflicts with in times 
    */
-  private Collection<TimeRange> removeConflicts(Collection<Event> events, Collection<TimeRange> times, Collection<String> attendees) {
+  private Queue<TimeRange> removeConflicts(Collection<Event> events, Collection<TimeRange> times, Collection<String> attendees) {
     Queue<TimeRange> timesQueue = new ArrayDeque<>(times); //make a copy so we don't modify the original
     for (Event event : events) {
       if (hasOverlappingAttendendees(event.getAttendees(), attendees)) {
@@ -150,20 +150,22 @@ public final class FindMeetingQuery {
    * @return the available times for all mandatory attendees to meet
    */
   private Collection<TimeRange> queryMandatoryAttendees(Collection<Event> events, MeetingRequest request) {
-    List<TimeRange> times = new ArrayList<>();
+    Queue<TimeRange> times = new ArrayDeque<>();
     if (request.getDuration() > 1440) {
       return times;
     }
     //asume all time is valid
     times.add(TimeRange.WHOLE_DAY);
-    times = (List<TimeRange>) removeConflicts(events, times, request.getAttendees());
+    times = removeConflicts(events, times, request.getAttendees());
+    Queue<TimeRange> fixedTimes = new ArrayDeque<>(times.size());
     //remove time slots that are too short
-    for (int i = 0; i < times.size(); i++) {
-      if (times.get(i).duration() < request.getDuration()) {
-        times.remove(i--);
+    while (!times.isEmpty()) {
+      TimeRange time = times.remove();
+      if (!times.get(i).duration() < request.getDuration()) {
+        fixedTimes.add(time);
       }
     }
-    return times;
+    return fixedTimes;
   }
   /*
    * @return True if there is at least one attendee that appears in both eventAttendees and requestAttendees
