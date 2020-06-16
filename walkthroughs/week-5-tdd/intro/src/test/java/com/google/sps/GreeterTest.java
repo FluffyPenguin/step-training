@@ -14,7 +14,7 @@
 
 package com.google.sps;
 
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -23,11 +23,30 @@ import org.junit.runners.JUnit4;
 public final class GreeterTest {
 
   @Test
-  public void testGreeting() {
+  public void testGreeting() throws Exception {
     Greeter greeter = new Greeter();
 
     String greeting = greeter.greet("Ada");
 
-    Assert.assertEquals("Hello Ada", greeting);
+    assertEquals("Hello Ada", greeting);
+  }
+
+  @Test
+  public void testGreetingTrimsWhitespace() throws Exception {
+    Greeter greeter = new Greeter();
+
+    String greeting = greeter.greet("   Ada   ");
+
+    // Whitespace should be trimmed
+    assertEquals("Hello Ada", greeting);
+  }
+
+  @Test
+  public void testGreetingRemovesSymbols() throws Exception {
+    Greeter greeter = new Greeter();
+    String greeting = greeter.greet(" !@#_()%($#)%#($%)#$ Ada $%#)$ (%)   (@#$ ");
+
+    //Symbols should be removed
+    assertEquals("Hello Ada", greeting);
   }
 }
